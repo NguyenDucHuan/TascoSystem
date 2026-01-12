@@ -1,0 +1,73 @@
+syntax = "proto3";
+
+option csharp_namespace = "Tasco.TaskService.API.Protos";
+
+package taskmember;
+
+service TaskMemberService {
+  rpc CreateTaskMember (TaskMemberRequest) returns (TaskMemberResponse);
+  rpc UpdateTaskMember (UpdateTaskMemberRequest) returns (TaskMemberResponse);
+  rpc DeleteTaskMember (TaskMemberRequestById) returns (TaskMemberDeleteResponse);
+  rpc GetTaskMemberById (TaskMemberRequestById) returns (TaskMemberResponse);
+  rpc GetTaskMembersByTaskId (TaskMemberRequestByTaskId) returns (TaskMemberListResponse);
+  rpc RemoveTaskMember (RemoveTaskMemberRequest) returns (TaskMemberResponse);
+}
+
+// Request/Response messages
+
+message TaskMemberRequest {
+  string work_task_id = 1;
+  string user_id = 2;
+  string user_name = 3;
+  string user_email = 4;
+  string role = 5;
+  string assigned_by_user_id = 6;
+}
+
+message TaskMemberRequestById {
+  string id = 1;
+}
+
+message TaskMemberRequestByTaskId {
+  string work_task_id = 1;
+  int32 page_size = 2;
+  int32 page_index = 3;
+}
+
+message UpdateTaskMemberRequest {
+  string id = 1;
+  TaskMemberRequest member = 2;
+}
+
+message RemoveTaskMemberRequest {
+  string id = 1;
+  string removed_by_user_id = 2;
+}
+
+message TaskMemberResponse {
+  string id = 1;
+  string work_task_id = 2;
+  string user_id = 3;
+  string user_name = 4;
+  string user_email = 5;
+  string role = 6;
+  bool is_active = 7;
+  string assigned_date = 8;
+  string assigned_by_user_id = 9;
+  string assigned_by_user_name = 10;
+  string removed_date = 11;
+  string removed_by_user_id = 12;
+  string removed_by_user_name = 13;
+}
+
+message TaskMemberListResponse {
+  repeated TaskMemberResponse task_members = 1;
+  int32 total_count = 2;
+  int32 page_count = 3;
+  int32 current_page = 4;
+}
+
+message TaskMemberDeleteResponse {
+  string message = 1;
+  bool success = 2;
+} 

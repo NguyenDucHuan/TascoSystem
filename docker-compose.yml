@@ -1,0 +1,200 @@
+version: "3.9"
+
+services:
+
+  # SQL Server cho UserAuthService
+  sqlserver-auth:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: sqlserver-auth
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "Password123@"
+    ports:
+      - "1434:1433"
+    volumes:
+      - sqlserver_auth_data:/var/opt/mssql
+    networks:
+      - tasco-network
+
+  # SQL Server cho TaskService
+  sqlserver-task:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: sqlserver-task
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "Password123@"
+    ports:
+      - "1435:1433"
+    volumes:
+      - sqlserver_task_data:/var/opt/mssql
+    networks:
+      - tasco-network
+
+  # PostgreSQL cho ProjectService
+  postgresql:
+    image: postgres:15
+    container_name: postgresql
+    environment:
+      POSTGRES_DB: ProjectManagementDB
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 12345
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgresql_data:/var/lib/postgresql/data
+    networks:
+      - tasco-network
+
+  # RabbitMQ
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin123
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - tasco-network
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 5s
+      timeout: 10s
+      retries: 5
+
+  # API Gateway
+  gateway:
+    build:
+      context: .
+      dockerfile: ./services/Tasco.Gateway/Tasco.Gateway.API/Dockerfile
+    container_name: gateway
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      - Jwt__Key=Ndj239JdlaiekNdsak20sh4Jdlahtoq93nfJUoqpkcbvJdue15jaTJeVA315OrM7E2cBab30RMH3hsrHgduFrHDcE6fxjoYZgeFONFh7HgQHj1i4OI4
+      - Jwt__Issuer=TascoSystem
+      - Jwt__Audience=TascoSystemUsers
+    ports:
+      - "5000:8080"
+    networks:
+      - tasco-network
+
+  # User Auth Service
+  userauthservice:
+    build:
+      context: .
+      dockerfile: ./services/Tasco.UserAuthService/Tasco.UserAuthService.API/Dockerfile
+    container_name: userauthservice
+    env_file:
+      - ./services/Tasco.UserAuthService/Tasco.UserAuthService.API/.env
+    environment:
+      - ConnectionStrings__TascoAuth=Server=sqlserver-auth;Database=TascoAuthDb;User Id=sa;Password=Password123@;TrustServerCertificate=True
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      - Email__Host=smtp.gmail.com
+      - Email__Port=587
+      - Email__SystemName=Tasco
+      - Email__Sender=moneymind392@gmail.com
+      - Email__Password=jhxa qrsl bcru ihra
+    ports:
+      - "5001:8080"
+    depends_on:
+      - sqlserver-auth
+    networks:
+      - tasco-network
+
+  # Project Service
+  projectservice:
+    build:
+      context: .
+      dockerfile: ./services/Tasco.ProjectService/Tasco.ProjectService.API/Dockerfile
+    container_name: projectservice
+    environment:
+      - ConnectionStrings__DefaultConnection=Host=postgresql;Database=ProjectManagementDB;Username=postgres;Password=12345
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      - RabbitMQ__HostName=rabbitmq
+      - RabbitMQ__Port=5672
+      - RabbitMQ__UserName=admin
+      - RabbitMQ__Password=admin123
+    ports:
+      - "5002:8080"
+    depends_on:
+      - postgresql
+      - rabbitmq
+    networks:
+      - tasco-network
+
+  # Task Service
+  taskservice:
+    build:
+      context: .
+      dockerfile: ./services/Tasco.TaskService/Tasco.TaskService.API/Dockerfile
+    container_name: taskservice
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=sqlserver-task;Database=TascoTaskDb;User Id=sa;Password=Password123@;TrustServerCertificate=True
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      - RabbitMQ__HostName=rabbitmq
+      - RabbitMQ__Port=5672
+      - RabbitMQ__UserName=admin
+      - RabbitMQ__Password=admin123
+    ports:
+      - "5003:8080"
+      - "8081:8081"
+    depends_on:
+      - sqlserver-task
+      - rabbitmq
+    networks:
+      - tasco-network
+
+  # Orchestrator
+  orchestrator:
+    build:
+      context: .
+      dockerfile: ./services/Tasco.Orchestrator/Tasco.Orchestrator.Api/Dockerfile
+    container_name: orchestrator
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+    ports:
+      - "5004:8080"
+    depends_on:
+      - projectservice
+      - taskservice
+      - userauthservice
+    networks:
+      - tasco-network
+
+  # Notification Service
+  notification-service:
+    build:
+      context: .
+      dockerfile: ./services/Tasco.NotificationService/Tasco.NotificationService.Worker/Dockerfile
+    container_name: notification-service
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - RabbitMQ__HostName=rabbitmq
+      - RabbitMQ__Port=5672
+      - RabbitMQ__UserName=admin
+      - RabbitMQ__Password=admin123
+      - Email__Host=smtp.gmail.com
+      - Email__Port=587
+      - Email__SystemName=Tasco
+      - Email__Sender=moneymind392@gmail.com
+      - Email__Password=jhxa qrsl bcru ihra
+    networks:
+      - tasco-network
+
+networks:
+  tasco-network:
+    driver: bridge
+
+volumes:
+  sqlserver_auth_data:
+  sqlserver_task_data:
+  postgresql_data:

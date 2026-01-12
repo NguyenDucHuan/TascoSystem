@@ -1,0 +1,90 @@
+﻿	syntax = "proto3";
+
+	option csharp_namespace = "Tasco.ProjectService.Service.Services.GRpcService";
+
+	package project;
+	service Project {
+	  rpc GetProjectById (GetProjectByIdRequest) returns (ProjectResponse);
+	  rpc CreateProject (CreateProjectRequest) returns (BoolResponse);
+	  rpc UpdateProject (UpdateProjectRequest) returns (BoolResponse);
+	  rpc DeleteProject (GetProjectByIdRequest) returns (BoolResponse);
+	  rpc GetProjectForManber (GetProjectBymenberPage) returns (PageProjectResponse);
+	  rpc GetPageProjects (SearchProjectsRequest) returns (PageProjectResponse);
+	}
+	// ===== REQUEST =====
+	message GetProjectByIdRequest {
+	  string project_id = 1;
+	  string user_id = 2;
+	}
+
+	message CreateProjectRequest {
+	  string name = 1;
+	  string description = 2;
+	  string owner_id = 3;
+	  string owner_name = 4;
+	  string owner_email = 5; 
+	}
+
+	message UpdateProjectRequest {
+	  string id = 1;
+	  string name = 2;
+	  string description = 3;
+	  string update_by = 4;
+	}
+	
+	message GetProjectBymenberPage {
+	  string user_id = 1;
+	  string role = 2;
+	  int32 page_size = 3;
+	  int32 page_number = 4;
+	  string search = 5; 
+	  bool isDelete = 6;
+	}
+
+	message SearchProjectsRequest {
+	  string search_term = 1;
+	  int32 page_size = 2;
+	  int32 page_number = 3;
+	  bool include_deleted = 4;
+	}
+
+	// ===== RESPONSE =====
+	message PageProjectResponse
+	{
+		repeated ProjectResponse projects = 1;
+	  int32 total_page = 2;
+	  int32 page_size = 3;
+	  int32 page_number = 4;
+	  int32 total_count = 5;
+	}
+
+	message ProjectResponse {
+	  string id = 1;
+	  string name = 2;
+	  string description = 3;
+	  string owner_id = 4;
+	  string created_at = 5;
+	  string update_by = 6;
+	  string updated_at = 7;
+	  repeated ProjectMember members = 8;
+	  bool is_deleted = 9;
+	  string deleted_at = 10;
+	}
+
+
+	message ProjectMember {
+	  string user_id = 1;
+	  string role = 2;
+	  string user_name = 3;
+	  string user_gmail = 4;  
+	  string approved_status = 5;
+	  string approved_update_date = 6;
+	  bool is_removed = 7;
+	  string remove_date = 8;
+	}
+
+	
+	message BoolResponse{
+		bool data = 1;
+	  string message = 2;
+	}

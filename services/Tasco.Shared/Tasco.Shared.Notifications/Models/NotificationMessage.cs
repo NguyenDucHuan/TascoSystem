@@ -1,0 +1,73 @@
+using System.ComponentModel.DataAnnotations;
+
+namespace Tasco.Shared.Notifications.Models
+{
+    public class NotificationMessage
+    {
+        public string Id { get; set; } = Guid.NewGuid().ToString();
+
+        [Required]
+        public string UserId { get; set; } = string.Empty;
+
+        [Required]
+        public string Title { get; set; } = string.Empty;
+
+        [Required]
+        public string Message { get; set; } = string.Empty;
+
+        public NotificationType Type { get; set; }
+
+        public string? ProjectId { get; set; }
+
+        public string? TaskId { get; set; }
+
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        public bool IsRead { get; set; } = false;
+
+        public Dictionary<string, object>? Metadata { get; set; }
+
+        public NotificationPriority Priority { get; set; } = NotificationPriority.Normal;
+
+        public List<NotificationChannel> Channels { get; set; } = new();
+    }
+
+    public enum NotificationType
+    {
+        //TaskStatusChanged,
+        //TaskAssigned,
+        //TaskCommentAdded,
+        //TaskUpdated,
+        //TaskDeleted,
+        //ProjectCreated,
+        //ProjectUpdated,
+        //ProjectDeleted,
+        //ProjectMemberAdded,
+        //ProjectMemberRemoved,
+        //DeadlineReminder,
+        //MentionInComment
+        TaskStatusChanged,
+        TaskAssigned,
+        TaskCommentAdded,
+        ProjectCreated,
+        ProjectUpdated,
+        DeadlineReminder,
+        MentionInComment
+    }
+
+    public enum NotificationPriority
+    {
+        Low = 1,
+        Normal = 2,
+        High = 3,
+        Critical = 4
+    }
+
+    public enum NotificationChannel
+    {
+        InApp,
+        Email,
+        SMS,
+        Push
+    }
+} 

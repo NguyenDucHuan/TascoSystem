@@ -1,0 +1,68 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "Tasco.ProjectService.Service.Protos";
+
+package projectmember;
+
+// Service definition cho ProjectMember
+service ProjectMemberService {
+  rpc RemoveMemberFromProject(RemoveMemberRequest) returns (RemoveMemberResponse);
+  rpc UpdateApprovedStatus(UpdateApprovedStatusRequest) returns (UpdateApprovedStatusResponse);
+  rpc UpdateMemberRole(UpdateMemberRoleRequest) returns (UpdateMemberRoleResponse);
+}
+
+// Message cho RemoveMemberFromProject
+message RemoveMemberRequest {
+  string project_id = 1;
+  string member_id = 2;
+  string owner_id = 3;
+}
+
+message RemoveMemberResponse {
+  bool success = 1;
+  string message = 2;
+  int32 status_code = 3;
+}
+
+// Message cho UpdateApprovedStatus
+message UpdateApprovedStatusRequest {
+  string project_id = 1;
+  string member_id = 2;
+  string user_name = 3;
+  string user_gmail = 4;
+  string approved_status = 5;
+  optional string owner_id = 6;
+}
+message UpdateApprovedStatusResponse {
+  bool success = 1;
+  string message = 2;
+  int32 status_code = 3;
+}
+
+// Message cho UpdateMemberRole
+message UpdateMemberRoleRequest {
+  string project_id = 1;
+  string member_id = 2;
+  string role = 3;
+  optional string owner_id = 4;
+}
+
+message UpdateMemberRoleResponse {
+  bool success = 1;
+  string message = 2;
+  int32 status_code = 3;
+}
+
+// Enum cho các trạng thái phê duyệt
+enum ApprovedStatus {
+  PENDING = 0;
+  APPROVED = 1;
+  REJECTED = 2;
+  REMOVED = 3;
+}
+
+// Enum cho các vai trò thành viên
+enum MemberRole {
+  MEMBER = 0;
+  OWNER = 1;
+}

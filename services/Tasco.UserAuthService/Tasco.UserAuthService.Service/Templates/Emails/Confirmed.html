@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Confirm Your Email - Tasco</title>
+    <!--[if mso]>
+    <noscript>
+        <xml>
+            <o:OfficeDocumentSettings>
+                <o:AllowPNG/>
+                <o:PixelsPerInch>96</o:PixelsPerInch>
+            </o:OfficeDocumentSettings>
+        </xml>
+    </noscript>
+    <![endif]-->
+    <style type="text/css">
+        /* Reset styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body, table, td, p, a {
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+        }
+
+        table {
+            border-collapse: collapse !important;
+            mso-table-lspace: 0pt !important;
+            mso-table-rspace: 0pt !important;
+        }
+
+        img {
+            border: 0;
+            height: auto;
+            line-height: 100%;
+            outline: none;
+            text-decoration: none;
+            -ms-interpolation-mode: bicubic;
+        }
+
+        /* Body styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8fafc;
+            margin: 0 !important;
+            padding: 0 !important;
+            color: #374151;
+        }
+
+        /* Container styles */
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Header styles */
+        .header {
+            background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
+            padding: 40px 30px;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        .logo-container {
+            background-color: rgba(255, 255, 255, 0.15);
+            border-radius: 16px;
+            padding: 10px;
+            display: inline-block;
+            margin-right: 20px;
+        }
+
+        .company-info {
+            color: #ffffff;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .company-name {
+            font-size: 28px;
+            font-weight: bold;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Content styles */
+        .content {
+            padding: 50px 40px;
+        }
+
+        .welcome-section {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .icon-wrapper {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid #93c5fd;
+        }
+
+        .main-title {
+            font-size: 32px;
+            font-weight: bold;
+            color: #1e293b;
+            margin-bottom: 15px;
+            line-height: 1.2;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        /* Greeting box */
+        .greeting-box {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border: 2px solid #bae6fd;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 30px 0;
+            text-align: left;
+        }
+
+        .greeting-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #0f172a;
+            margin-bottom: 12px;
+        }
+
+        .greeting-text {
+            font-size: 16px;
+            color: #475569;
+            line-height: 1.6;
+        }
+
+        /* Main content text */
+        .main-text {
+            font-size: 16px;
+            color: #475569;
+            line-height: 1.7;
+            margin-bottom: 35px;
+        }
+
+        /* Button styles */
+        .button-container {
+            text-align: center;
+            margin: 40px 0;
+        }
+
+        .confirm-button, .help-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
+            color: #ffffff !important;
+            text-decoration: none !important;
+            padding: 18px 40px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            box-shadow: 0 8px 20px rgba(14, 165, 233, 0.3);
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+            .confirm-button:hover, .help-button:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 12px 25px rgba(14, 165, 233, 0.4);
+            }
+
+        /* Security notice */
+        .security-notice {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border: 2px solid #fbbf24;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 30px 0;
+        }
+
+        .security-icon {
+            font-size: 18px;
+            margin-right: 8px;
+        }
+
+        .security-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #92400e;
+            margin-bottom: 8px;
+        }
+
+        .security-text {
+            font-size: 14px;
+            color: #a16207;
+            line-height: 1.5;
+        }
+
+        /* Help section */
+        .help-section {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .help-title {
+            font-size: 16px;
+            color: #374151;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        /* Footer styles */
+        .footer {
+            background-color: #f8fafc;
+            padding: 40px 30px;
+            text-align: center;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .footer-logo {
+            max-width: 60px;
+            height: auto;
+            margin-bottom: 20px;
+            opacity: 0.8;
+        }
+
+        .footer-company {
+            font-size: 18px;
+            font-weight: bold;
+            color: #0ea5e9;
+            margin-bottom: 8px;
+        }
+
+        .footer-tagline {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 25px;
+        }
+
+        .social-links {
+            margin: 25px 0;
+        }
+
+        .social-link {
+            display: inline-block;
+            background-color: #e5e7eb;
+            color: #6b7280;
+            padding: 10px 15px;
+            margin: 0 5px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+            .social-link:hover {
+                background-color: #0ea5e9;
+                color: #ffffff;
+                transform: translateY(-1px);
+            }
+
+        .copyright {
+            border-top: 1px solid #e5e7eb;
+            padding-top: 25px;
+            margin-top: 25px;
+        }
+
+        .copyright-text {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 8px;
+        }
+
+        .copyright-small {
+            font-size: 12px;
+            color: #9ca3af;
+        }
+
+        .disclaimer {
+            font-size: 14px;
+            color: #6b7280;
+            margin-top: 30px;
+            text-align: center;
+            font-style: italic;
+        }
+
+        /* Mobile responsive */
+        @media only screen and (max-width: 600px) {
+            .email-container {
+                margin: 10px !important;
+                border-radius: 8px !important;
+            }
+
+            .header {
+                padding: 25px 20px !important;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .logo-container {
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+
+            .content,
+            .footer {
+                padding: 25px 20px !important;
+            }
+
+            .main-title {
+                font-size: 26px !important;
+            }
+
+            .confirm-button, .help-button {
+                padding: 16px 32px !important;
+                font-size: 15px !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
+            }
+
+            .greeting-box {
+                padding: 20px !important;
+            }
+
+            .social-link {
+                display: block !important;
+                margin: 8px 0 !important;
+            }
+        }
+
+        /* Dark mode support */
+        @media (prefers-color-scheme: dark) {
+            .email-container {
+                background-color: #1f2937 !important;
+                color: #f9fafb !important;
+            }
+
+            .content {
+                background-color: #1f2937 !important;
+            }
+
+            .main-title {
+                color: #f9fafb !important;
+            }
+
+            .greeting-box {
+                background: linear-gradient(135deg, #1e293b 0%, #334155 100%) !important;
+                border-color: #475569 !important;
+            }
+
+            .greeting-title {
+                color: #f9fafb !important;
+            }
+        }
+    </style>
+    <!--[if mso]>
+    <style type="text/css">
+        .confirm-button, .help-button {
+            border: none !important;
+            mso-padding-alt: 18px 40px !important;
+        }
+    </style>
+    <![endif]-->
+</head>
+<body>
+    <!-- Wrapper table for Outlook -->
+    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f8fafc; min-height: 100vh;">
+        <tr>
+            <td align="center" style="padding: 30px 20px;">
+
+                <!-- Main email container -->
+                <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;" class="email-container">
+
+                    <!-- Header Section -->
+                    <tr>
+                        <td class="header">
+                            <div class="logo-container">
+                                <img src="cid:Logo_Tasco" alt="Tasco Logo" style="max-width: 50px; height: auto; display: block;">
+                            </div>
+                            <div class="company-info">
+                                <div class="company-name">Tasco</div>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Main Content Section -->
+                    <tr>
+                        <td class="content">
+
+                            <!-- Welcome Header -->
+                            <div class="welcome-section">
+                                <div class="icon-wrapper">
+                                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M3 8L10.89 13.26C11.2187 13.4793 11.6049 13.5963 12 13.5963C12.3951 13.5963 12.7813 13.4793 13.11 13.26L21 8M5 19H19C19.5304 19 20.0391 18.7893 20.4142 18.4142C20.7893 18.0391 21 17.5304 21 17V7C21 6.46957 20.7893 5.96086 20.4142 5.58579C20.0391 5.21071 19.5304 5 19 5H5C4.46957 5 3.96086 5.21071 3.58579 5.58579C3.21071 5.96086 3 6.46957 3 7V17C3 17.5304 3.21071 18.0391 3.58579 18.4142C3.96086 18.7893 4.46957 19 5 19Z" stroke="#0ea5e9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </div>
+                                <h1 class="main-title">Verify Your Email Address</h1>
+                                <p class="subtitle">Welcome to Tasco! Let's get you started.</p>
+                            </div>
+
+                            <!-- Personal Greeting -->
+                            <div class="greeting-box">
+                                <div class="greeting-title">Hello @Model.FullName! 👋</div>
+                                <p class="greeting-text">
+                                    Thank you for joining Tasco, the professional email service platform. You're just one click away from accessing all our powerful features and starting your email journey with confidence.
+                                </p>
+                            </div>
+
+                            <!-- Main Message -->
+                            <p class="main-text">
+                                To ensure the security of your account and complete your registration, please verify your email address by clicking the button below. This helps us protect your account and ensure you receive important notifications.
+                            </p>
+
+                            <!-- Call-to-Action Button -->
+                            <div class="button-container">
+                                <a href="@Model.ConfirmationLink" class="confirm-button" style="color: #ffffff !important; text-decoration: none !important;">
+                                    ✓ Confirm Email Address
+                                </a>
+                            </div>
+
+                            <!-- Security Notice -->
+                            <div class="security-notice">
+                                <div class="security-title">
+                                    <span class="security-icon">🔒</span>Security Notice
+                                </div>
+                                <p class="security-text">
+                                    This verification link is valid for <strong>48 hours</strong> from the time this email was sent. If the link expires, you can request a new verification email from your account dashboard.
+                                </p>
+                            </div>
+
+                            <!-- Help Section -->
+                            <div class="help-section">
+                                <div class="help-title">Having trouble with the button above?</div>
+                                <p style="font-size: 14px; color: #6b7280; margin-bottom: 10px;">
+                                    Copy and paste this link into your web browser:
+                                </p>
+                                <div class="fallback-link">@Model.ConfirmationLink</div>
+                            </div>
+
+                            <!-- Disclaimer -->
+                            <p class="disclaimer">
+                                If you didn't create an account with Tasco, you can safely ignore this email. No further action is required.
+                            </p>
+
+                        </td>
+                    </tr>
+
+                    <!-- Footer Section -->
+                    <tr>
+                        <td class="footer">
+
+                            <!-- Company Info -->
+                            <img src="cid:Logo_Tasco" alt="Tasco" class="footer-logo">
+                            <div class="footer-company">Tasco</div>
+                            <div class="footer-tagline">Professional Email Service Platform</div>
+
+                            <!-- Social Links -->
+                            <div class="social-links">
+                                <a href="#" class="social-link">Website</a>
+                                <a href="#" class="social-link">Support</a>
+                                <a href="#" class="social-link">GitHub</a>
+                                <a href="#" class="social-link">LinkedIn</a>
+                            </div>
+
+                            <!-- Copyright -->
+                            <div class="copyright">
+                                <div class="copyright-text">© 2025 Tasco Email Service Platform</div>
+                                <div class="copyright-small">
+                                    Developed with ❤️ at FPT University, Ho Chi Minh City, Vietnam
+                                </div>
+                            </div>
+
+                        </td>
+                    </tr>
+
+                </table>
+
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

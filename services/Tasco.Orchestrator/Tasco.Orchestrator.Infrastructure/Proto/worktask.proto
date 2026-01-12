@@ -1,0 +1,61 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+
+option csharp_namespace = "Tasco.ProjectService.Service.Protos";
+
+package worktask;
+
+service WorkTaskService {
+  rpc CreateWorkTask (WorkTaskRequest) returns (WorkTaskResponseUnique);
+  rpc DeleteWorkTask (WorkTaskRequestById) returns (google.protobuf.Empty);
+  rpc GetWorkTaskById (WorkTaskRequestById) returns (WorkTaskResponseUnique);
+  rpc UpdateWorkTask (UpdateWorkTaskRequest) returns (WorkTaskResponseUnique);
+}
+
+message WorkTaskRequest {
+  string title = 1;
+  string description = 2;
+  string work_area_id = 3;
+  string status = 4;
+  string priority = 5;
+  string start_date = 6;
+  string end_date = 7;
+  string due_date = 8;
+  string created_by_user_id = 9;
+  string created_by_user_name = 10;
+}
+
+message WorkTaskRequestById {
+  string id = 1;
+}
+
+message WorkTaskListRequest {
+  int32 page_size = 1;
+  int32 page_index = 2;
+  string search = 3;
+}
+
+message UpdateWorkTaskRequest {
+  string id = 1;
+  WorkTaskRequest task = 2;
+}
+
+message WorkTaskResponseUnique {
+  string id = 1;
+  string title = 2;
+  string description = 3;
+  string work_area_id = 4;
+  string status = 5;
+  string priority = 6;
+  string start_date = 7;
+  string end_date = 8;
+  string due_date = 9;
+  int32 progress = 10;
+  string created_by_user_id = 11;
+  string created_by_user_name = 12;
+  string created_date = 13;
+  string modified_date = 14;
+}
+
+

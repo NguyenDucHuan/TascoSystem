@@ -1,0 +1,38 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="DotNetEnv" Version="3.1.1" />
+		<PackageReference Include="Google.Protobuf" Version="3.25.1" />
+		<PackageReference Include="Grpc.AspNetCore" Version="2.60.0" />
+		<PackageReference Include="Grpc.Net.Client" Version="2.60.0" />
+		<PackageReference Include="Grpc.Tools" Version="2.60.0">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.0" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Protobuf Include="Protos\worktask.proto" GrpcServices="Server" />
+		<Protobuf Include="Protos\workarea.proto" GrpcServices="Server" />
+		<Protobuf Include="Protos\comment.proto" GrpcServices="Server" />
+		<Protobuf Include="Protos\taskobjective.proto" GrpcServices="Server" />
+		<Protobuf Include="Protos\taskmember.proto" GrpcServices="Server" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Tasco.TaskService.Service\Tasco.TaskService.Service.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Payload\Response\" />
+	</ItemGroup>
+
+</Project>

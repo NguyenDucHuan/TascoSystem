@@ -1,0 +1,271 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Tasco User Authentication Service - Logic Flow Rules
+
+## Project Structure & Architecture
+
+### Layer Architecture
+- **API Layer**: [Tasco.UserAuthService.API](mdc:Tasco.UserAuthService.API) - Controllers, Models, Middlewares
+- **Service Layer**: [Tasco.UserAuthService.Service](mdc:Tasco.UserAuthService.Service) - Business Logic, Exceptions
+- **Repository Layer**: [Tasco.UserAuthService.Repository](mdc:Tasco.UserAuthService.Repository) - Data Access
+
+### Key Files
+- **Custom Exceptions**: [CustomExceptions.cs](mdc:Tasco.UserAuthService.Service/Exceptions/CustomExceptions.cs)
+- **Authentication Service**: [AuthenticationService.cs](mdc:Tasco.UserAuthService.Service/Services/AuthenticationService.cs)
+- **Email Service**: [EmailService.cs](mdc:Tasco.UserAuthService.Service/Services/EmailService.cs)
+- **Token Service**: [TokenService.cs](mdc:Tasco.UserAuthService.Service/Services/TokenService.cs)
+- **Exception Middleware**: [ExceptionMiddleware.cs](mdc:Tasco.UserAuthService.API/Middlewares/ExceptionMiddleware.cs)
+- **Authentication Controller**: [AuthenticationController.cs](mdc:Tasco.UserAuthService.API/Controllers/AuthenticationController.cs)
+
+## Exception Handling Strategy
+
+### NO Try-Catch in Services
+- **Services MUST NOT contain try-catch blocks** except for wrapping external dependencies
+- Use custom exceptions defined in [CustomExceptions.cs](mdc:Tasco.UserAuthService.Service/Exceptions/CustomExceptions.cs)
+- Let [ExceptionMiddleware.cs](mdc:Tasco.UserAuthService.API/Middlewares/ExceptionMiddleware.cs) handle all exceptions
+
+### Custom Exception Types
+```csharp
+// Authentication Exceptions (400 Bad Request)
+- UserNotFoundException
+- InvalidCredentialsException
+- EmailNotConfirmedException
+- AccountDisabledException
+- EmailAlreadyExistsException
+
+// User Operation Failures (422 Unprocessable Entity)
+- UserCreationFailedException
+- RoleAssignmentFailedException
+- EmailConfirmationFailedException
+
+// Service Failures (502 Bad Gateway)
+- EmailSendFailedException
+- TokenGenerationFailedException
+
+// Configuration Issues (503 Service Unavailable)
+- ConfigurationMissingException
+```
+
+### Exception Usage Pattern
+```csharp
+// ❌ WRONG - Don't use try-catch in services
+try {
+    var user = await _userManager.FindByEmailAsync(email);
+    if (user == null) throw new Exception("User not found");
+} catch (Exception ex) {
+    throw new Exception(ex.Message);
+}
+
+// ✅ CORRECT - Direct exception throwing
+var user = await _userManager.FindByEmailAsync(email);
+if (user == null) {
+    throw new UserNotFoundException();
+}
+```
+
+## API Response Format
+
+### Consistent Response Structure
+All API responses MUST use [ApiResponse<T>](mdc:Tasco.UserAuthService.API/Models/ResponseModels/AuthenticationResponseModels.cs):
+
+```csharp
+// Success Response
+return Ok(ApiResponse<LoginResponse>.SuccessResponse(data, "Login successful"));
+
+// Error Response (handled by middleware)
+throw new InvalidCredentialsException(); // Will be converted to proper API response
+```
+
+### HTTP Status Code Mapping
+- **200 OK**: Successful operations
+- **400 Bad Request**: Authentication failures, validation errors
+- **404 Not Found**: Resource/template not found
+- **422 Unprocessable Entity**: User operation failures
+- **502 Bad Gateway**: External service failures
+- **503 Service Unavailable**: Configuration issues
+- **500 Internal Server Error**: Unexpected errors
+
+## Business Logic Flow Patterns
+
+### Authentication Flow
+1. **Login**: Validate → Check Email Confirmed → Check Account Enabled → Generate Token
+2. **Register**: Check Email Exists → Create User → Assign Roles → Send Confirmation Email
+3. **Confirm Email**: Validate Token → Confirm Email → Unlock Account
+
+### Service Method Pattern
+```csharp
+public async Task<ReturnType> MethodAsync(Parameters)
+{
+    // 1. Input validation - throw specific exceptions
+    if (string.IsNullOrEmpty(input)) {
+        throw new InvalidUserIdException("Input is required");
+    }
+    
+    // 2. Business logic - no try-catch
+    var entity = await _repository.GetAsync(id);
+    if (entity == null) {
+        throw new EntityNotFoundException();
+    }
+    
+    // 3. Operations - throw specific exceptions on failure
+    var result = await _repository.UpdateAsync(entity);
+    if (!result.Succeeded) {
+        var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+        throw new EntityUpdateFailedException(errors);
+    }
+    
+    // 4. Return result
+    return mappedResult;
+}
+```
+
+### Controller Pattern
+```csharp
+[HttpPost("endpoint")]
+public async Task<IActionResult> Action([FromBody] RequestModel request)
+{
+    // 1. Model validation
+    if (!ModelState.IsValid) {
+        var errors = ModelState.Values
+            .SelectMany(v => v.Errors)
+            .Select(e => e.ErrorMessage)
+            .ToList();
+        return BadRequest(ApiResponse<object>.ErrorResponse("Validation failed", errors));
+    }
+    
+    // 2. Logging
+    _logger.LogInformation("Action attempt for: {Identifier}", request.Identifier);
+    
+    // 3. Service call (exceptions handled by middleware)
+    var businessModel = _mapper.Map<BusinessModel>(request);
+    var result = await _service.MethodAsync(businessModel);
+    
+    // 4. Response mapping
+    var response = _mapper.Map<ResponseModel>(result);
+    
+    // 5. Success logging
+    _logger.LogInformation("Action completed successfully: {Identifier}", result.Id);
+    
+    // 6. Return success response
+    return Ok(ApiResponse<ResponseModel>.SuccessResponse(response, "Success message"));
+}
+```
+
+## Configuration Validation Pattern
+
+### Check Required Configurations
+```csharp
+// ❌ WRONG - Generic validation
+if (string.IsNullOrEmpty(jwtKey) || string.IsNullOrEmpty(jwtIssuer)) {
+    throw new Exception("Configuration missing");
+}
+
+// ✅ CORRECT - Specific validation
+if (string.IsNullOrEmpty(jwtKey)) {
+    throw new ConfigurationMissingException("Jwt:Key");
+}
+if (string.IsNullOrEmpty(jwtIssuer)) {
+    throw new ConfigurationMissingException("Jwt:Issuer");
+}
+```
+
+## Email Service Pattern
+
+### Template and Asset Validation
+```csharp
+var templatePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Templates/Emails/Template.html");
+if (!File.Exists(templatePath)) {
+    throw new EmailTemplateNotFoundException(templatePath);
+}
+
+var logoPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets/Logos/Logo.jpg");
+if (!File.Exists(logoPath)) {
+    throw new EmailLogoNotFoundException(logoPath);
+}
+
+// Only wrap external service calls
+try {
+    await _emailRepository.SendEmailAsync(mailMessage);
+} catch (Exception ex) {
+    throw new EmailSendFailedException(ex.Message, ex);
+}
+```
+
+## AutoMapper Configuration
+
+### Mapping Profiles
+All mappings MUST be defined in [AutoMapperProfiles.cs](mdc:Tasco.UserAuthService.API/Mapping/AutoMapperProfiles.cs):
+- Request Models → Business Models
+- Business Models → Response Models
+
+## Naming Conventions
+
+### Files & Classes
+- **Controllers**: `{Entity}Controller.cs`
+- **Services**: `{Entity}Service.cs` + Interface `I{Entity}Service.cs`
+- **Exceptions**: `{Reason}Exception.cs`
+- **Models**: `{Entity}Request.cs`, `{Entity}Response.cs`, `{Entity}Business.cs`
+
+### Methods
+- **Async methods**: Always end with `Async`
+- **Controller actions**: Use HTTP verb names (`Login`, `Register`, `ConfirmEmail`)
+- **Service methods**: Use business domain verbs (`LoginAsync`, `RegisterAsync`)
+
+## Validation Rules
+
+### Request Model Validation
+```csharp
+[Required(ErrorMessage = "Field is required")]
+[EmailAddress(ErrorMessage = "Invalid email format")]
+[MinLength(6, ErrorMessage = "Minimum 6 characters")]
+[Compare("Password", ErrorMessage = "Passwords do not match")]
+```
+
+### Controller Validation Handling
+Always check `ModelState.IsValid` first and return detailed validation errors.
+
+## Logging Strategy
+
+### Log Levels
+- **LogInformation**: Successful operations, user actions
+- **LogWarning**: Expected exceptions (400-422 status codes)
+- **LogError**: Unexpected exceptions (500+ status codes)
+
+### Log Messages
+```csharp
+_logger.LogInformation("Action attempt for: {Identifier}", identifier);
+_logger.LogInformation("Action completed successfully: {Result}", result.Id);
+_logger.LogWarning("Business validation failed: {Error}", exception.Message);
+_logger.LogError(exception, "Unexpected error occurred: {ErrorId}", errorId);
+```
+
+## Dependency Injection Pattern
+
+### Service Registration
+Services MUST be registered with their interfaces in Program.cs or service configuration files.
+
+## Security Considerations
+
+### Token Handling
+- JWT tokens MUST include user claims and roles
+- Token expiration MUST be configurable
+- Token validation MUST be handled by authentication middleware
+
+### Email Confirmation
+- Tokens MUST be Base64 URL encoded
+- Confirmation links MUST be properly formatted
+- Email templates MUST be sanitized
+
+## Testing Strategy
+
+### Unit Test Pattern
+- Test business logic without try-catch
+- Mock external dependencies
+- Assert specific exception types
+- Verify logging calls
+
+
+This rule set ensures consistent, maintainable, and robust authentication logic flows throughout the Tasco User Authentication Service.

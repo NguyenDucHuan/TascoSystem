@@ -1,0 +1,43 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Compile Remove="BusinessModels\**" />
+		<EmbeddedResource Remove="BusinessModels\**" />
+		<None Remove="BusinessModels\**" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="AutoMapper" Version="14.0.0" />
+		<PackageReference Include="Google.Protobuf" Version="3.31.1" />
+		<PackageReference Include="Grpc.AspNetCore" Version="2.71.0" />
+		<PackageReference Include="Grpc.AspNetCore.Server.Reflection" Version="2.71.0" />
+		<PackageReference Include="Grpc.Tools" Version="2.72.0">
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+			<PrivateAssets>all</PrivateAssets>
+		</PackageReference>
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+		<PackageReference Include="NLog.Web.AspNetCore" Version="5.5.0" />
+		<PackageReference Include="NLog" Version="5.5.0" />
+		<PackageReference Include="RabbitMQ.Client" Version="7.1.2" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Protobuf Include="Proto\project.proto" GrpcServices="Server" ProtoRoot="Proto" />
+		<Protobuf Include="Proto\ProjectMenber.proto" GrpcServices="Server" ProtoRoot="Proto" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Tasco.ProjectService.Repository\Tasco.ProjectService.Repository.csproj" />
+		<ProjectReference Include="..\..\Tasco.Shared\Tasco.Shared.Notifications\Tasco.Shared.Notifications.csproj" />
+	</ItemGroup>
+
+</Project>

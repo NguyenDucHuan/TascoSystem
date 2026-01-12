@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Google.Protobuf" Version="3.31.1" />
+		<PackageReference Include="Grpc.AspNetCore" Version="2.71.0" />
+		<PackageReference Include="Grpc.AspNetCore.Server.Reflection" Version="2.71.0" />
+		<PackageReference Include="Grpc.Tools" Version="2.72.0">
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+			<PrivateAssets>all</PrivateAssets>
+		</PackageReference>
+	</ItemGroup>
+	<ItemGroup>
+		<Protobuf Include="Proto\project.proto" GrpcServices="Client" ProtoRoot="Proto" />
+		<Protobuf Include="Proto\ProjectMenber.proto" GrpcServices="Client" ProtoRoot="Proto" />
+		<Protobuf Include="Proto\comment.proto" GrpcServices="Client" ProtoRoot="Proto" />
+		<Protobuf Include="Proto\subtask.proto" GrpcServices="Client" ProtoRoot="Proto" />
+		<Protobuf Include="Proto\taskmember.proto" GrpcServices="Client" ProtoRoot="Proto" />
+		<Protobuf Include="Proto\taskobjective.proto" GrpcServices="Client" ProtoRoot="Proto" />
+		<Protobuf Include="Proto\workarea.proto" GrpcServices="Client" ProtoRoot="Proto" />
+		<Protobuf Include="Proto\worktask.proto" GrpcServices="Client" ProtoRoot="Proto" />
+	</ItemGroup>
+
+</Project>
